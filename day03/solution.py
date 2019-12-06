@@ -28,11 +28,14 @@ class Line:
         self.p1 = p1
         self.p2 = p2
 
-    def contains(self, p):
+    def __contains__(self, p):
         return self.p1.distance(p) + self.p2.distance(p) == self.p1.distance(self.p2)
 
     def __str__(self):
         return f"{self.p1} -> {self.p2}"
+
+    def modulos(self):
+        return self.p1.distance(self.p2)
 
     @staticmethod
     def intersection(v, u):
@@ -57,7 +60,7 @@ class Line:
         
         inter = Point(x, y)
 
-        if not u.contains(inter) or not v.contains(inter):
+        if inter not in u or inter not in v:
             return None
         
         return inter
@@ -88,7 +91,7 @@ class CrossedWires:
             current = Point(new_line.p2.x, new_line.p2.y)
             self.second_lines.append(new_line)
         
-    def main(self):
+    def part_one(self):
         self.parse_inputs()
         intersections = []
         for v in self.first_lines:
@@ -104,6 +107,35 @@ class CrossedWires:
                 minDistance = modulo
 
         return minDistance
+
+    def part_two(self):
+        self.parse_inputs()
+        intersections = []
+        for v in self.first_lines:
+            for u in self.second_lines:
+                inter = Line.intersection(u, v)
+                if inter is not None:
+                    intersections.append(inter)
+
+        distances = []
+        distance = 0
+        for point in intersections:
+            for v in self.first_lines:
+                distance += v.modulos()
+                if point in v:
+                    distance -= Line(point, v.p2).modulos()
+                    break
+            
+            for v in self.second_lines:
+                distance += v.modulos()
+                if point in v:
+                    distance -= Line(point, v.p2).modulos()
+                    break
+            distances.append(distance)
+            distance = 0
+
+
+        return min(distances)
 
 
     @staticmethod
@@ -124,4 +156,5 @@ class CrossedWires:
 
 
 if __name__ == "__main__":
-    print(CrossedWires().main()) # 2050
+    print(CrossedWires().part_one()) # 2050
+    print(CrossedWires().part_two()) # 21666
