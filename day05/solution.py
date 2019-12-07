@@ -1,4 +1,4 @@
-# rewriting the IntCode computer from dary 2
+# rewriting the IntCode computer from day 2
 
 class IntCodeComputer:
     POSITION_MODE = '0'
