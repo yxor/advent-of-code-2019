@@ -4,8 +4,8 @@ class IntCodeComputer:
     POSITION_MODE = '0'
     VALUE_MODE = '1'
 
-    def __init__(self):
-        with open("input.txt", "r") as f:
+    def __init__(self, path_to_code):
+        with open(path_to_code, "r") as f:
             self.instructs = f.read().split(',')
         self.pointer = 0
         self.running = True
@@ -87,4 +87,4 @@ class IntCodeComputer:
 if __name__ == "__main__":
     # Part one: Enter 1 when prompted.
     # Part two: Enter 5 when prompted.
-    IntCodeComputer().run()
+    IntCodeComputer("input.txt").run()
