@@ -1,26 +1,31 @@
-from queue import SimpleQueue
+from queue import SimpleQueue, Empty
 # the Intcode computer from day 5
 
 class IntCodeComputer:
     POSITION_MODE = '0'
     VALUE_MODE = '1'
 
-    def __init__(self, path_to_code):
-        with open(path_to_code, "r") as f:
-            self.instructs = f.read().split(',')
+    def __init__(self, instructs):
+        self.instructs = instructs
         self.pointer = 0
         self.running = True
+        self.paused = False
         self.inputs = SimpleQueue()
 
     def add_input(self, n):
         self.inputs.put(n)
     
     def get_output(self):
+        if self.inputs.empty():
+            raise Empty("something went wrong")
         return self.inputs.get()
 
     def run(self):
+        self.paused = False
         while self.running:
             self.execute()
+            if self.paused:
+                break
 
     
     def execute(self):
@@ -36,11 +41,13 @@ class IntCodeComputer:
         elif opcode.endswith('2'):  # multiplication
             self.instructs[int(args[2][0])] = str(self.get_value(args[0]) * self.get_value(args[1]))
         elif opcode.endswith('3'):  # input
+            if self.inputs.empty():
+                raise Empty("something went wrong")
             self.instructs[int(args[0][0])] = self.inputs.get()
 
         elif opcode.endswith('4'):  # output
-
             self.inputs.put(self.get_value(args[0]))
+            self.paused = True # pause the execution
         elif opcode.endswith('5'):  # jump if true
             if self.get_value(args[0]) != 0:
                 jumpFlag = False
