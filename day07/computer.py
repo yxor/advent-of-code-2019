@@ -31,35 +31,41 @@ class IntCodeComputer:
     def execute(self):
         # parsing the arguments
         jumpFlag = True
-        opcode = self.instructs[self.pointer]
+        opcode = str(self.instructs[self.pointer])
         argc = self.argc(opcode)
         argv = self.instructs[self.pointer + 1: self.pointer + argc]
         args = [(k, v) for (k, v) in zip(argv, opcode.zfill(argc + 1)[:-2][::-1])]
         
         if opcode.endswith('1'):    # addition
-            self.instructs[int(args[2][0])] = str(self.get_value(args[0]) + self.get_value(args[1]))
+            self.instructs[args[2][0]] = self.get_value(args[0]) + self.get_value(args[1])
+
         elif opcode.endswith('2'):  # multiplication
-            self.instructs[int(args[2][0])] = str(self.get_value(args[0]) * self.get_value(args[1]))
+            self.instructs[args[2][0]] = self.get_value(args[0]) * self.get_value(args[1])
+
         elif opcode.endswith('3'):  # input
             if self.inputs.empty():
                 raise Empty("something went wrong")
-            self.instructs[int(args[0][0])] = self.inputs.get()
+            self.instructs[args[0][0]] = self.inputs.get()
 
         elif opcode.endswith('4'):  # output
             self.inputs.put(self.get_value(args[0]))
             self.paused = True # pause the execution
+
         elif opcode.endswith('5'):  # jump if true
             if self.get_value(args[0]) != 0:
                 jumpFlag = False
-                self.instructs[self.pointer] = str(self.get_value(args[1]))
+                self.instructs[self.pointer] = self.get_value(args[1])
+
         elif opcode.endswith('6'):  # jump if false
             if self.get_value(args[0]) == 0 :
                 jumpFlag = False
-                self.instructs[self.pointer] = str(self.get_value(args[1]))
+                self.instructs[self.pointer] = self.get_value(args[1])
+
         elif opcode.endswith('7'):  # less than
-            self.instructs[int(args[2][0])] = '1' if self.get_value(args[0]) < self.get_value(args[1]) else '0'
+            self.instructs[args[2][0]] = 1 if self.get_value(args[0]) < self.get_value(args[1]) else 0
+
         elif opcode.endswith('8'):  # equal
-            self.instructs[int(args[2][0])] = '1' if self.get_value(args[0]) == self.get_value(args[1]) else '0'
+            self.instructs[args[2][0]] = 1 if self.get_value(args[0]) == self.get_value(args[1]) else 0
         
         elif opcode.endswith('99'):
             self.running = False
@@ -67,18 +73,19 @@ class IntCodeComputer:
         if jumpFlag:
             self.pointer += argc
         else:
-            self.pointer = int(self.instructs[self.pointer])
+            self.pointer = self.instructs[self.pointer]
         
 
     def get_value(self, arg : tuple) -> int:
         if arg[1] == self.POSITION_MODE:
-            return int(self.instructs[int(arg[0])])
-        return int(arg[0])
+            return self.instructs[arg[0]]
+        return arg[0]
         
 
     
     @staticmethod
-    def argc(opcode : str) -> int:
+    def argc(code : int) -> int:
+        opcode = str(code)
         if opcode.endswith('1'):
             return 4
         if opcode.endswith('2'):

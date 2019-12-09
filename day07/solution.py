@@ -4,7 +4,7 @@ path = 'input.txt'
 
 ## part one
 with open(path, "r") as f:
-    inputs = f.read().split(',')
+    inputs = [int(element) for element in f.read().split(',')]
 best = 0
 for setting in permutations([0, 1, 2, 3, 4]):
     signal = 0
@@ -27,7 +27,7 @@ print(best) # 17440
 best = 0
 for setting in permutations([5, 6, 7, 8, 9]):
     with open(path, "r") as f:
-        inputs = f.read().split(',')
+        inputs = [int(element) for element in f.read().split(',')]
     computers = [IntCodeComputer(inputs[:]) for _ in range(5)]
     signal = 0
     for phase, computer in zip(setting, computers):
