@@ -54,12 +54,12 @@ class IntCodeComputer:
         elif opcode.endswith('5'):  # jump if true
             if self.get_value(args[0]) != 0:
                 jumpFlag = False
-                self.instructs[self.pointer] = self.get_value(args[1])
+                self.pointer = self.get_value(args[1])
 
         elif opcode.endswith('6'):  # jump if false
             if self.get_value(args[0]) == 0 :
                 jumpFlag = False
-                self.instructs[self.pointer] = self.get_value(args[1])
+                self.pointer = self.get_value(args[1])
 
         elif opcode.endswith('7'):  # less than
             self.instructs[args[2][0]] = 1 if self.get_value(args[0]) < self.get_value(args[1]) else 0
@@ -72,8 +72,6 @@ class IntCodeComputer:
 
         if jumpFlag:
             self.pointer += argc
-        else:
-            self.pointer = self.instructs[self.pointer]
         
 
     def get_value(self, arg : tuple) -> int:
